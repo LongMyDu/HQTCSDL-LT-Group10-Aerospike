@@ -15,6 +15,9 @@ namespace TestApp
 {
     public partial class ImageSlideshow : Form
     {
+        const string IP = "127.0.0.2";
+        const int PORT = 3000;
+
         const string namespace_name = "test";
         const string userinfo_set_name = "users_information";
         const string image_set_name = "users_images";
@@ -23,13 +26,14 @@ namespace TestApp
         string username = null;
         WritePolicy policy = null;
         int imageCount = -1;
-        int current_index = 0;
+        int current_index = -1;
 
-        public ImageSlideshow(AerospikeClient client, string username)
+        public ImageSlideshow(string username)
         {
             InitializeComponent();
-            this.client = client;
             policy = new WritePolicy();
+
+            client = new AerospikeClient(IP, PORT);
 
             this.username = username;
             this.imageCount = getImageCount();
@@ -37,8 +41,10 @@ namespace TestApp
 
         private void ImageSlideshow_Load(object sender, EventArgs e)
         {
+            
             current_index = nextImageIndex();
-            showImage();
+            if (current_index > 0)
+                showImage();
         }
 
         private int nextImageIndex()
@@ -120,7 +126,9 @@ namespace TestApp
 
         private int getImageCount()
         {
+            //client = new AerospikeClient(IP, PORT);
             Record record = client.Get(policy, new Key(namespace_name, userinfo_set_name, username));
+            //client.Close();
             return record.GetInt("image_count");
         }
 
@@ -135,26 +143,56 @@ namespace TestApp
 
         private string getDateUpload(int index)
         {
+            //client = new AerospikeClient(IP, PORT);
             string current_img_key = username + ":" + index;
             Key image_key = new Key(namespace_name, image_set_name, current_img_key);
+            String date = null;
 
-            Record record = client.Get(policy, new Key(namespace_name, image_set_name, current_img_key), "date_upload");
-            return record.GetValue("date_upload").ToString();
+            try
+            {
+                Record record = client.Get(policy, new Key(namespace_name, image_set_name, current_img_key), "date_upload");
+                long seconds = record.GetLong("date_upload");
+
+                date = DateTimeOffset.FromUnixTimeSeconds(seconds).ToString();
+            } 
+            catch (Exception e)
+            {
+            }
+
+            //client.Close();
+            return date;
         }
 
         private Bitmap getImageFromAerospike(int index)
         {
+            //client = new AerospikeClient(IP, PORT);
+
             string current_img_key = username + ":" + index;
             Key image_key = new Key(namespace_name, image_set_name, current_img_key);
+            Bitmap bm = null;
 
-            Record record = client.Get(policy, new Key(namespace_name, image_set_name, current_img_key), "image");
-            if (record == null)
+            try
             {
-                return null;
+                Record record = client.Get(policy, new Key(namespace_name, image_set_name, current_img_key), "image");
+                if (record != null)
+                {
+                    object image = record.GetValue("image");
+                    bm = ByteToImage((byte[])image);
+                }
+
+               
+            }
+            catch (Exception e)
+            {
             }
 
-            object image = record.GetValue("image");
-            return ByteToImage((byte[])image);
+            //client.Close();
+            return bm;
+        }
+
+        ~ImageSlideshow()
+        {
+            client.Close();
         }
     }
 }

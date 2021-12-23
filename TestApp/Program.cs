@@ -18,10 +18,17 @@ namespace TestApp
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+           
+            SignIn signInForm = new SignIn();
+            Application.Run(signInForm);
 
-            AerospikeClient client = new AerospikeClient("127.0.0.1", 3000);
+            if (signInForm.verification == true)
+            {
+                String username = signInForm.getUsername();
 
-            Application.Run(new MyForm(client, "longmydu"));
+                Application.Run(new MyForm(username));
+            }
+           
         }
     }
 }

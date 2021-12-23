@@ -35,3 +35,5 @@ I:\MyDu\Year 03\HQT CSDL\Project-LT-Aerospike\HQTCSDL-LT-Group10-Aerospike\TestA
 I:\MyDu\Year 03\HQT CSDL\Project-LT-Aerospike\HQTCSDL-LT-Group10-Aerospike\TestApp\obj\Debug\TestApp.exe
 I:\MyDu\Year 03\HQT CSDL\Project-LT-Aerospike\HQTCSDL-LT-Group10-Aerospike\TestApp\obj\Debug\TestApp.pdb
 I:\MyDu\Year 03\HQT CSDL\Project-LT-Aerospike\HQTCSDL-LT-Group10-Aerospike\TestApp\obj\Debug\TestApp.ImageSlideshow.resources
+I:\MyDu\Year 03\HQT CSDL\Project-LT-Aerospike\HQTCSDL-LT-Group10-Aerospike\TestApp\obj\Debug\TestApp.SignIn.resources
+I:\MyDu\Year 03\HQT CSDL\Project-LT-Aerospike\HQTCSDL-LT-Group10-Aerospike\TestApp\obj\Debug\TestApp.SignUp.resources

@@ -15,6 +15,9 @@ namespace TestApp
 {
     public partial class MyForm : Form
     {
+        const string IP = "127.0.0.2";
+        const int PORT = 3000;
+
         const string namespace_name = "test";
         const string userinfo_set_name = "users_information";
         const string image_set_name = "users_images";
@@ -24,11 +27,10 @@ namespace TestApp
         int imageCount = -1;
         WritePolicy policy = null;
 
-        public MyForm(AerospikeClient client, string username)
+        public MyForm(string username)
         {
             InitializeComponent();
-
-            this.client = client;
+            client = new AerospikeClient(IP, PORT);
             policy = new WritePolicy();
 
             this.username = username;
@@ -37,7 +39,10 @@ namespace TestApp
 
         private int getImageCount()
         {
+            // = new AerospikeClient(IP, PORT);
             Record record = client.Get(policy, new Key(namespace_name, userinfo_set_name, username));
+            //client.Close();
+
             return record.GetInt("image_count");
         }
 
@@ -46,21 +51,24 @@ namespace TestApp
             int next_image_index = this.imageCount + 1;
             string next_image_key = username + ":" + next_image_index.ToString();
 
-            MessageBox.Show(next_image_key);
+            //MessageBox.Show(next_image_key);
 
             Key image_key = new Key(namespace_name, image_set_name, next_image_key);
             Key user_key = new Key(namespace_name, userinfo_set_name, username);
 
 
             Bin bin1 = new Bin("image", BlobValue);
-            Bin bin2 = new Bin("date_upload", DateTime.Now);
+            Bin bin2 = new Bin("date_upload", new DateTimeOffset(DateTime.Now).ToUnixTimeSeconds());
             Bin bin3 = new Bin("username", username);
 
+            //client = new AerospikeClient(IP, PORT);
             //Thêm image mới 
             client.Put(policy, image_key, bin1, bin2, bin3);
 
             // Cập nhật lại imageCount của user đó
             client.Put(policy, user_key, new Bin("image_count", next_image_index));
+
+            //client.Close();
 
             this.imageCount = next_image_index;
             return true;
@@ -126,7 +134,7 @@ namespace TestApp
 
         private void myImagesButton_Click(object sender, EventArgs e)
         {
-            Form imageList = new ImageSlideshow(client, username);
+            Form imageList = new ImageSlideshow(username);
             imageList.Show();
         }
     }

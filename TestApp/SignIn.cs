@@ -59,6 +59,10 @@ namespace TestApp
                 Form form = new MyForm(username);
                 this.Close();
             }
+            else
+            {
+                MessageBox.Show("Sign in failed! Wrong username or password.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         ~SignIn()
